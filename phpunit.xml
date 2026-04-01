@@ -1,0 +1,9 @@
+<phpunit bootstrap="test/bootstrap.php"
+         colors="true"
+         stopOnFailure="true">
+    <testsuites>
+        <testsuite name="CSV Plugin">
+            <directory>test</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
