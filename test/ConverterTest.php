@@ -6,6 +6,7 @@ use Barberry\ContentType;
 use Barberry\Exception\ConversionNotPossible;
 use Barberry\Plugin\Csv\Command;
 use Barberry\Plugin\Csv\Converter;
+use PHPUnit\Framework\TestCase;
 
 class ConverterTest extends TestCase
 {
@@ -38,22 +39,29 @@ class ConverterTest extends TestCase
         self::assertSame("name,note\nJosé,€ 10\n", $left);
     }
 
+    public function testCommaCommandPreservesEmptyFieldsAndEscapedQuotes(): void
+    {
+        $source = "name;note;empty\r\n\"a\"\"b\";\" spaced \";\r\n";
+
+        $converted = $this->converter()->convert($source, $this->command('comma'));
+
+        self::assertSame("name,note,empty\n\"a\"\"b\",\" spaced \",\"\"\n", $converted);
+    }
+
     public function testFailsOnAmbiguousDelimiter(): void
     {
         $source = "alpha\nbeta\n";
 
-        self::assertThrows(ConversionNotPossible::class, function () use ($source): void {
-            $this->converter()->convert($source, $this->command('comma'));
-        });
+        $this->expectException(ConversionNotPossible::class);
+        $this->converter()->convert($source, $this->command('comma'));
     }
 
     public function testFailsOnAmbiguousEncodingWhenUtf8Requested(): void
     {
         $source = iconv('UTF-8', 'ISO-8859-1//IGNORE', "name;note\r\ncafé;ok\r\n");
 
-        self::assertThrows(ConversionNotPossible::class, function () use ($source): void {
-            $this->converter()->convert($source, $this->command('utf8'));
-        });
+        $this->expectException(ConversionNotPossible::class);
+        $this->converter()->convert($source, $this->command('utf8'));
     }
 
     private function converter(): Converter

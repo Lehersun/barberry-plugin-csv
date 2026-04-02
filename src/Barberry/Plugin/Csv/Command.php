@@ -6,14 +6,14 @@ use Barberry\Plugin\InterfaceCommand;
 
 class Command implements InterfaceCommand
 {
-    private const TOKEN_UTF8 = 'utf8';
-    private const TOKEN_COMMA = 'comma';
-    private const CANONICAL_ORDER = array(self::TOKEN_UTF8, self::TOKEN_COMMA);
+    const TOKEN_UTF8 = 'utf8';
+    const TOKEN_COMMA = 'comma';
+    const CANONICAL_ORDER = array(self::TOKEN_UTF8, self::TOKEN_COMMA);
 
     private $valid = true;
 
     /**
-     * @var array<string, bool>
+     * @var array
      */
     private $tokens = array();
 
@@ -21,14 +21,14 @@ class Command implements InterfaceCommand
     {
         $parsed = self::parse((string) $commandString);
         $this->valid = $parsed !== null;
-        $this->tokens = $parsed ?? array();
+        $this->tokens = is_array($parsed) ? $parsed : array();
 
         return $this;
     }
 
     public function conforms($commandString)
     {
-        $parsed = self::parse((string) $commandString);
+        $parsed = self::parse((string)$commandString);
         if (!$this->valid || $parsed === null) {
             return false;
         }
@@ -51,7 +51,7 @@ class Command implements InterfaceCommand
         return isset($this->tokens[self::TOKEN_COMMA]);
     }
 
-    public function __toString(): string
+    public function __toString()
     {
         if (!$this->valid) {
             return '';
@@ -68,7 +68,7 @@ class Command implements InterfaceCommand
     }
 
     /**
-     * @return array<string, bool>|null
+     * @return array|null
      */
     private static function parse($commandString)
     {
@@ -93,7 +93,7 @@ class Command implements InterfaceCommand
     }
 
     /**
-     * @param array<string, bool> $tokens
+     * @param array $tokens
      */
     private static function canonicalString(array $tokens)
     {

@@ -1,9 +1,17 @@
-<phpunit bootstrap="test/bootstrap.php"
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
          colors="true"
-         stopOnFailure="true">
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="true"
+         bootstrap="vendor/autoload.php">
+
     <testsuites>
         <testsuite name="CSV Plugin">
             <directory>test</directory>
         </testsuite>
     </testsuites>
+
 </phpunit>

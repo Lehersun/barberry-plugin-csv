@@ -3,6 +3,7 @@
 namespace Barberry\Plugin\Csv\Test;
 
 use Barberry\Plugin\Csv\Command;
+use PHPUnit\Framework\TestCase;
 
 class CommandTest extends TestCase
 {

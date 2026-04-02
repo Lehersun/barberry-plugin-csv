@@ -12,7 +12,7 @@ class Installer implements Plugin\InterfaceInstaller
     public function install(
         Direction\ComposerInterface $directionComposer,
         Monitor\ComposerInterface $monitorComposer,
-        $pluginParams = []
+        $pluginParams = array()
     ) {
         $directionComposer->writeClassDeclaration(
             ContentType::csv(),
