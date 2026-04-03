@@ -6,7 +6,7 @@ use Barberry\Exception\ConversionNotPossible;
 
 class Transformer
 {
-    const DELIMITER_CANDIDATES = array(',', ';', "\t", '|');
+    const DELIMITER_CANDIDATES = array(',', ';', "\t", '|', ':');
 
     /**
      * @var Command
