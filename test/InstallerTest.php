@@ -2,7 +2,6 @@
 
 namespace Barberry\Plugin\Csv\Test;
 
-use Barberry\ContentType;
 use Barberry\Direction\Composer;
 use Barberry\Exception\AmbiguousPluginCommand;
 use Barberry\Monitor\Composer as MonitorComposer;
@@ -26,6 +25,7 @@ class InstallerTest extends TestCase
         $installer->install(new Composer(self::$directionDir, sys_get_temp_dir()), new MonitorComposer($monitorDir, sys_get_temp_dir()));
 
         require_once self::$directionDir . 'CsvToCsv.php';
+        require_once self::$directionDir . 'TxtToCsv.php';
     }
 
     public function testInstallerGeneratesDirectionResolvedByFactory(): void
@@ -40,5 +40,13 @@ class InstallerTest extends TestCase
     {
         $this->expectException(AmbiguousPluginCommand::class);
         new \Barberry\Direction\DirectionCsvToCsv('bad_command');
+    }
+
+    public function testInstallerGeneratesTxtToCsvDirection(): void
+    {
+        $direction = new \Barberry\Direction\DirectionTxtToCsv('comma');
+
+        self::assertInstanceOf('Barberry\\Direction\\DirectionTxtToCsv', $direction);
+        self::assertSame("a,b\n", $direction->convert("a;b\r\n"));
     }
 }

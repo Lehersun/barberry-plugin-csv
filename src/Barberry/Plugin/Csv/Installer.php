@@ -15,6 +15,13 @@ class Installer implements Plugin\InterfaceInstaller
         $pluginParams = array()
     ) {
         $directionComposer->writeClassDeclaration(
+            ContentType::txt(),
+            ContentType::csv(),
+            'new Plugin\\Csv\\Converter',
+            'new Plugin\\Csv\\Command'
+        );
+
+        $directionComposer->writeClassDeclaration(
             ContentType::csv(),
             ContentType::csv(),
             'new Plugin\\Csv\\Converter',
