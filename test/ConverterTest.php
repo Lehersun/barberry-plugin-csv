@@ -45,7 +45,7 @@ class ConverterTest extends TestCase
 
         $converted = $this->converter()->convert($source, $this->command('comma'));
 
-        self::assertSame("name,note,empty\n\"a\"\"b\",\" spaced \",\"\"\n", $converted);
+        self::assertSame("name,note,empty\n\"a\"\"b\", spaced ,\n", $converted);
     }
 
     public function testFailsOnAmbiguousDelimiter(): void

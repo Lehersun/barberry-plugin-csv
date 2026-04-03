@@ -57,7 +57,7 @@ class Transformer
             return $output;
         }
 
-        $converted = iconv('UTF-8', $encoding . '//IGNORE', $output);
+        $converted = iconv('UTF-8', $encoding, $output);
         if ($converted === false) {
             throw new ConversionNotPossible('Unable to encode CSV output.');
         }
@@ -93,7 +93,7 @@ class Transformer
             return strncmp($bin, "\xEF\xBB\xBF", 3) === 0 ? substr($bin, 3) : $bin;
         }
 
-        $converted = iconv($encoding, 'UTF-8//IGNORE', $bin);
+        $converted = iconv($encoding, 'UTF-8', $bin);
         if ($converted === false) {
             throw new ConversionNotPossible('Unable to decode CSV input.');
         }
@@ -105,17 +105,18 @@ class Transformer
     {
         $matches = array();
         foreach (self::DELIMITER_CANDIDATES as $delimiter) {
-            try {
-                $rows = $this->parseCsv($utf8, $delimiter);
-            } catch (ConversionNotPossible $exception) {
-                continue;
-            }
+            $rows = $this->parseCsv($utf8, $delimiter);
 
             if (!$rows) {
                 continue;
             }
 
-            $widths = array_values(array_unique(array_map('count', $rows)));
+            $rowsForDetection = $this->rowsWithContent($rows);
+            if (!$rowsForDetection) {
+                $rowsForDetection = $rows;
+            }
+
+            $widths = array_values(array_unique(array_map('count', $rowsForDetection)));
             if (count($widths) !== 1 || $widths[0] < 2) {
                 continue;
             }
@@ -159,11 +160,9 @@ class Transformer
             $fields = array();
             foreach ($row as $field) {
                 $normalized = self::normalizeLineEndings($field);
-                $mustQuote = $normalized === ''
-                    || strpos($normalized, $delimiter) !== false
+                $mustQuote = strpos($normalized, $delimiter) !== false
                     || strpos($normalized, '"') !== false
-                    || strpos($normalized, "\n") !== false
-                    || preg_match('/^\s|\s$/u', $normalized);
+                    || strpos($normalized, "\n") !== false;
 
                 if ($mustQuote) {
                     $normalized = '"' . str_replace('"', '""', $normalized) . '"';
@@ -175,6 +174,21 @@ class Transformer
         }
 
         return implode("\n", $lines) . ($lines ? "\n" : '');
+    }
+
+    private function rowsWithContent(array $rows)
+    {
+        $filtered = array();
+        foreach ($rows as $row) {
+            foreach ($row as $field) {
+                if ($field !== '') {
+                    $filtered[] = $row;
+                    break;
+                }
+            }
+        }
+
+        return $filtered;
     }
 
     private static function normalizeLineEndings($value)
